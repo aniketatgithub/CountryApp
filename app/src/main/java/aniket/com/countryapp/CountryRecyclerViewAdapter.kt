@@ -28,12 +28,7 @@ class CountryRecyclerViewAdapter(_context : Context, _countryList:List<CountryMo
         holder.countryName.text = country.name
         holder.countryCapital.text = country.capital
         holder.countryPopulation.text = country.population.toString()
-
-
-
-
     }
-
 
     class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
