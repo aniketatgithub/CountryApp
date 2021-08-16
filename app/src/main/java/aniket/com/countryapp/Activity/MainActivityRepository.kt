@@ -1,7 +1,10 @@
 package aniket.com.countryapp.Activity
 
+import android.app.Application
 import android.arch.lifecycle.LiveData
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
@@ -11,9 +14,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 import aniket.com.countryapp.Model.CountryModel
 import aniket.com.countryapp.Retrofit.NetworkCall
 import aniket.com.countryapp.CountryApplication
+import java.security.AccessController.getContext
 
 class MainActivityRepository {
 
+    var lastResponse : List<CountryModel>?= null
     val BASE_URL = "https://6119f2efcbf1b30017eb5404.mockapi.io/"
     val TAG = MainActivityRepository::class.java.simpleName
 
@@ -41,18 +46,39 @@ class MainActivityRepository {
 
             override fun onResponse(call: Call<List<CountryModel>>?, response: Response<List<CountryModel>>?) {
 
-                Log.e(TAG,response!!.body().toString())
-                when(response.code())
-                {
-                    200 ->{
-                        Thread(Runnable {
 
-                            CountryApplication.database!!.countryDao().deleteAllCountries()
-                            CountryApplication.database!!.countryDao().insertAllCountries(response.body()!!)
 
-                        }).start()
-                    }
+                    when(response!!.code())
+                    {
+
+
+
+                        200 ->{
+
+                            if(lastResponse == null || lastResponse!=response.body()!!) {
+                            lastResponse = response.body()!!
+
+                            Thread(Runnable {
+                                Log.d("called","REFRESHED DATA")
+                                CountryApplication.database!!.countryDao().deleteAllCountries()
+                                CountryApplication.database!!.countryDao().insertAllCountries(response.body()!!)
+
+                            }).start()
+
+
+
+                        }
+                            else{
+                               Log.d("called","Not Refresing , SAME DATA")
+                            }
+
+                              }
+
+
+
                 }
+
+
 
             }
         })
@@ -60,3 +86,6 @@ class MainActivityRepository {
 
     }
 }
+
+
+

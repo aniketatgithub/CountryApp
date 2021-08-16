@@ -13,5 +13,6 @@ class CountryApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         database =  Room.databaseBuilder(applicationContext, CountryDatabase::class.java, "country_db").fallbackToDestructiveMigration().build()
+
     }
 }
